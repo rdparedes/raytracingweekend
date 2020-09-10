@@ -1,13 +1,16 @@
 #ifndef HITTABLE_H
 #define HITTABLE_H
 
-#include "vec3.h"
+#include "rtweekend.h"
 #include "ray.h"
+
+class material;
 
 struct hit_record
 {
     point3 p;
     vec3 normal;
+    shared_ptr<material> mat_ptr;
     double t;
     bool front_face;
 

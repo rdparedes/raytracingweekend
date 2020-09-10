@@ -1,4 +1,4 @@
 .vscode
 program
-output.ppm
+output*.ppm
 .DS_Store
