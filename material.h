@@ -5,6 +5,8 @@
 
 struct hit_record;
 
+const int AIR_REFLECTION_INDEX = 1.0;
+
 class material
 {
 public:
@@ -44,6 +46,51 @@ public:
 public:
     color albedo;
     double fuzz;
+};
+
+class dielectric : public material
+{
+public:
+    dielectric(double ri) : reflection_index(ri) {}
+
+    virtual bool scatter(const ray &r_in, const hit_record &rec, color &attenuation, ray &scattered) const override
+    {
+        attenuation = color(1.0, 1.0, 1.0);
+        double etai_over_etat = rec.front_face ? (AIR_REFLECTION_INDEX / reflection_index) : reflection_index;
+
+        vec3 unit_direction = unit_vector(r_in.direction());
+
+        double cos_theta = fmin(dot(-unit_direction, rec.normal), 1.0);
+        double sin_theta = sqrt(1.0 - cos_theta * cos_theta);
+        if (etai_over_etat * sin_theta > 1.0)
+        {
+            vec3 reflected = reflect(unit_direction, rec.normal);
+            scattered = ray(rec.p, reflected);
+            return true;
+        }
+
+        double reflect_probability = schlick(cos_theta, etai_over_etat);
+        if (random_double() < reflect_probability)
+        {
+            vec3 reflected = reflect(unit_direction, rec.normal);
+            scattered = ray(rec.p, reflected);
+            return true;
+        }
+
+        vec3 refracted = refract(unit_direction, rec.normal, etai_over_etat);
+        scattered = ray(rec.p, refracted);
+        return true;
+    }
+
+    double reflection_index;
+
+private:
+    double schlick(double cosine, double reflection_index) const
+    {
+        auto r0 = (1 - reflection_index) / (1 + reflection_index);
+        r0 = r0 * r0;
+        return r0 + (1 - r0) * pow((1 - cosine), 5);
+    }
 };
 
 #endif
