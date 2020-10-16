@@ -18,6 +18,6 @@ make
 
 ## Results
 
-![image1](./output1.png)
-![image2](./output2.png)
-![image3](./output3.png)
+![image1](./output/output1.png)
+![image2](./output/output2.png)
+![image3](./output/output3.png)
