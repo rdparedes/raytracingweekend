@@ -48,6 +48,7 @@ public:
     double fuzz;
 };
 
+// Dielectrics: water, glass, diamonds, etc. When a light ray hits them, it splits into a reflected and a refracted ray.
 class dielectric : public material
 {
 public:
